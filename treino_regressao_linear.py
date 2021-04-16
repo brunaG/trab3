@@ -61,9 +61,12 @@ def compute_cost(theta_0, theta_1, data):
         float: o erro quadratico medio
     """
     total_cost = 0
-
-    ### SEU CODIGO AQUI
-
+    for row in data:
+        x=row[0]
+        y=row[1]
+        total_cost=total_cost+(y-(x*theta_0+theta_1))**2
+        
+    total_cost=total_cost/(2*len(data))
     return total_cost
 
 """#### Teste do Erro Quadratico Medio
