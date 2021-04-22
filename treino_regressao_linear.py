@@ -44,7 +44,7 @@ def compute_cost(theta_0, theta_1, data):
         y = row[1]
         total_cost=total_cost+(y-(x*theta_0+theta_1))**2
     total_cost = total_cost / (len(data))
-    print("total_cost: ", total_cost)
+    #print("total_cost: ", total_cost)
     return total_cost
 
 
@@ -87,13 +87,13 @@ def step_gradient(theta_0_current, theta_1_current, data, alpha):
     der_theta_1 = 0
 
     for i in range(len(data)):
-        h = theta_0_current + data[i,0] * theta_1_current
-        der_theta_0 = der_theta_0+(h - data[i, 1])
+        h = theta_0_current + data[i][0] * theta_1_current
+        der_theta_0 = der_theta_0+(h - data[i][1])
     der_theta_0 = der_theta_0 * (2 / len(data))
 
     for i in range(len(data)):
-        h = theta_0_current + data[i,0] * theta_1_current
-        der_theta_1 = der_theta_1+((h - data[i, 1]) * data[i, 0])
+        h = theta_0_current + data[i][0] * theta_1_current
+        der_theta_1 = der_theta_1+((h - data[i][1]) * data[i][0])
     der_theta_1 = der_theta_1 * (2 / len(data))
 
     theta_0_updated = theta_0_current - (alpha * der_theta_0)
@@ -148,22 +148,21 @@ def gradient_descent(data, starting_theta_0, starting_theta_1, learning_rate, nu
     theta_1_progress = []
 
     # Para cada iteração, obtem novos (Theta0,Theta1) e calcula o custo (EQM)
-    num_iterations = 10
     for i in range(num_iterations):
         cost_graph.append(compute_cost(theta_0, theta_1, data))
-        theta_0, theta_1 = step_gradient(theta_0, theta_1, data, alpha=0.0001)
+        theta_0, theta_1 = step_gradient(theta_0, theta_1, data, learning_rate)
         theta_0_progress.append(theta_0)
         theta_1_progress.append(theta_1)
 
     return [theta_0, theta_1, cost_graph, theta_0_progress, theta_1_progress]
 
 def minmax_norm(column):
-    norm_col=np.empty(column.size)
+    norm_col=np.empty(0)
     max_x=column.max()
     min_x=column.min()
-    for x in data['Id']:
+    for x in column:
         x_new=(x-min_x)/(max_x-min_x)
-        norm_col=norm_col.append(x_new)
+        norm_col=np.append(norm_col, x_new)
     return norm_col
 
 if __name__ == '__main__':
@@ -172,11 +171,14 @@ if __name__ == '__main__':
     parser.add_argument('iterations', metavar='iterations', type=int)
     parser.add_argument('natributos', metavar='natributos', type=int)
     args = parser.parse_args()
-
     data = np.genfromtxt(open(args.filename,'r'), delimiter=',',names=True)
     
-    
-    theta_0, theta_1, cost_graph, theta_0_progress, theta_1_progress = gradient_descent( data, starting_theta_0=0, starting_theta_1=0, learning_rate=0, num_iterations=10)
+    if(args.natributos==1): #3.1
+        grlivArea=minmax_norm(data['GrLivArea'])
+        new_data=np.c_[grlivArea,data['SalePrice']]
+        theta_0, theta_1, cost_graph, theta_0_progress, theta_1_progress = gradient_descent( new_data, starting_theta_0=100, starting_theta_1=0, learning_rate=0.001, num_iterations=args.iterations)  
+
+
 # Imprimir parâmetros otimizados
     print("Theta_0 otimizado: ", theta_0)
     print("Theta_1 otimizado: ", theta_1)
