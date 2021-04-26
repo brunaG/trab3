@@ -44,7 +44,7 @@ def step_gradient(theta_0_current, theta_n_current, data, alpha):
 
     hatH_list=[]
     nfeats=len(data[0])-1
-    
+
     for i in range(len(data)):
         hatH=theta_0_current
         for n in range(nfeats):
@@ -55,11 +55,11 @@ def step_gradient(theta_0_current, theta_n_current, data, alpha):
     	der_theta_0 = der_theta_0+(hatH_list[i] - data[i][-1])
     der_theta_0 = der_theta_0 * (2 / float(len(data)))
     theta_0_updated = theta_0_current - (alpha * der_theta_0)
-    
+
     for n in range(nfeats): #For each var
         theta_n_grad=0
         for i in range(len(data)): #For each row
-            theta_n_grad = theta_n_grad+((hatH_list[i] - data[i][nfeats-1]) * data[i][n])            
+            theta_n_grad = theta_n_grad+((hatH_list[i] - data[i][nfeats-1]) * data[i][n])
         theta_n_grad = theta_n_grad * (2 / float(len(data)))
         theta_n_grad=theta_n_current[n]-(alpha * theta_n_grad)
         theta_n_updated.append(theta_n_grad)
@@ -115,16 +115,17 @@ if __name__ == '__main__':
     args = parser.parse_args()
     data = np.genfromtxt(open(args.filename,'r'), delimiter=',',names=True)
     p=3
+
     if(args.natributos==1): #3.1
         grlivArea=minmax_norm(data['GrLivArea'])
         #Predicted value on the last column
         new_data=np.c_[grlivArea,data['SalePrice']]
-        theta_0, theta_1, cost_graph, theta_0_progress, theta_1_progress = gradient_descent( new_data, starting_theta_0=100, starting_theta_n=[0.0], learning_rate=0.001, num_iterations=100)
+        theta_0, theta_1, cost_graph, theta_0_progress, theta_1_progress = gradient_descent( new_data, starting_theta_0=100, starting_theta_n=[0.0], learning_rate=0.001, num_iterations=300)
     elif(args.natributos==2): #3.1
         grlivArea = minmax_norm(data['GrLivArea'])
         overallQual = minmax_norm(data['OverallQual'])
         new_data = np.c_[grlivArea,overallQual,data['SalePrice']]
-        theta_0, theta_1, cost_graph, theta_0_progress, theta_1_progress = gradient_descent(new_data,starting_theta_0=100,starting_theta_n=[0.0,0.0],learning_rate=0.001,num_iterations=100)
+        theta_0, theta_1, cost_graph, theta_0_progress, theta_1_progress = gradient_descent(new_data,starting_theta_0=100,starting_theta_n=[0.0,0.0],learning_rate=0.001,num_iterations=300)
     elif(args.natributos==5): #3.1
         grlivArea = minmax_norm(data['GrLivArea'])
         overallQual = minmax_norm(data['OverallQual'])
@@ -135,8 +136,26 @@ if __name__ == '__main__':
         theta_0, theta_1, cost_graph, theta_0_progress, theta_1_progress = gradient_descent(new_data,starting_theta_0=100,starting_theta_n=[0.0, 0.0, 0.0, 0.0, 0.0],learning_rate=0.001,num_iterations=100)
 
 # Imprimir parâmetros otimizados
-    print("Theta_0 otimizado: ", theta_0)
-    print("Theta_1 otimizado: ", theta_1)
+    #print("Theta_0 otimizado: ", theta_0)
+    #print("Theta_1 otimizado: ", theta_1)
 
 # Imprimir erro com os parâmetros otimizados
-    print("Custo minimizado: ", compute_cost(theta_0, theta_1, new_data))
+    #print("Custo minimizado: ", compute_cost(theta_0, theta_1, new_data))
+
+    if(args.natributos==1):
+        print("Theta_0: ", theta_0)
+        print("Theta_1: ", theta_1)
+        print ('Erro quadratico medio: ', compute_cost(theta_0, theta_1, new_data))
+    if(args.natributos==2):
+        print("Theta_0: ", theta_0)
+        print("Theta_1: ", theta_1[0])
+        print("Theta_2: ", theta_1[1])
+        print ('Erro quadratico medio: ', compute_cost(theta_0, theta_1, new_data))
+    if(args.natributos==5):
+        print("Theta_0: ", theta_0)
+        print("Theta_1: ", theta_1[0])
+        print("Theta_2: ", theta_1[1])
+        print("Theta_3: ", theta_1[2])
+        print("Theta_4: ", theta_1[3])
+        print("Theta_5: ", theta_1[4])
+        print ('Erro quadratico medio: ', compute_cost(theta_0, theta_1, new_data))
